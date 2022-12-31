@@ -13,6 +13,8 @@
   mac: {
     artifactName: '${productName}_${version}.${ext}',
     target: ['dmg'],
+    icon: 'public/tray.png',
+
     category: 'public.app-category.utilities',
   },
   win: {
@@ -35,6 +37,8 @@
   linux: {
     category: 'Utility',
     target: 'AppImage',
+    icon: 'public/tray.png',
+
     artifactName: '${productName}_${version}.${ext}',
   },
 }
