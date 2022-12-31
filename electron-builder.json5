@@ -13,7 +13,7 @@
   mac: {
     artifactName: '${productName}_${version}.${ext}',
     target: ['dmg'],
-    icon: 'public/tray.png',
+    icon: 'public/icon.png',
 
     category: 'public.app-category.utilities',
   },
@@ -37,7 +37,7 @@
   linux: {
     category: 'Utility',
     target: 'AppImage',
-    icon: 'public/tray.png',
+    icon: 'public/icon.png',
 
     artifactName: '${productName}_${version}.${ext}',
   },
