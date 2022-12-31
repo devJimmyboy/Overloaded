@@ -13,7 +13,7 @@
   mac: {
     artifactName: '${productName}_${version}.${ext}',
     target: ['dmg'],
-    icon: 'public/icon.png',
+    icon: 'public/icon@2x.png',
 
     category: 'public.app-category.utilities',
   },
