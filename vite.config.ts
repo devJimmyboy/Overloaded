@@ -9,31 +9,39 @@ import pkg from './package.json'
 
 rmSync(path.join(__dirname, 'dist-electron'), { recursive: true, force: true })
 
-const isDevelopment = process.env.NODE_ENV === "development" || !!process.env.VSCODE_DEBUG
-const isProduction = process.env.NODE_ENV === "production"
+const isDevelopment = process.env.NODE_ENV === 'development' || !!process.env.VSCODE_DEBUG
+const isProduction = process.env.NODE_ENV === 'production'
 
 // https://vitejs.dev/config/
 export default defineConfig({
   resolve: {
     alias: {
-      '@': path.join(__dirname, 'src')
+      '@': path.join(__dirname, 'src'),
+    },
+  },
+
+  build: {
+    sourcemap: 'inline',
+    rollupOptions: {
+      input: {
+        index: path.resolve(__dirname, 'index.html'),
+        // menubar: path.resolve(__dirname, 'menubar.html'),
+      },
     },
   },
   plugins: [
     react(),
     electron({
-      include: [
-        'electron'
-      ],
+      include: ['electron'],
       transformOptions: {
-        sourcemap: isDevelopment
+        sourcemap: isDevelopment,
       },
       plugins: [
         ...(!!process.env.VSCODE_DEBUG
           ? [
-            // Will start Electron via VSCode Debug
-            customStart(() => debounce(() => console.log(/* For `.vscode/.debug.script.mjs` */'[startup] Electron App'))),
-          ]
+              // Will start Electron via VSCode Debug
+              customStart(() => debounce(() => console.log(/* For `.vscode/.debug.script.mjs` */ '[startup] Electron App'))),
+            ]
           : []),
         // Allow use `import.meta.env.VITE_SOME_KEY` in Electron-Main
         loadViteEnv(),
@@ -44,13 +52,15 @@ export default defineConfig({
       nodeIntegration: true,
     }),
   ],
-  server: !!process.env.VSCODE_DEBUG ? (() => {
-    const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL)
-    return {
-      host: url.hostname,
-      port: +url.port,
-    }
-  })() : undefined,
+  server: !!process.env.VSCODE_DEBUG
+    ? (() => {
+        const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL)
+        return {
+          host: url.hostname,
+          port: +url.port,
+        }
+      })()
+    : undefined,
   clearScreen: false,
 })
 
