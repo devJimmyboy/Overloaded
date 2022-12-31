@@ -13,6 +13,7 @@
   mac: {
     artifactName: '${productName}_${version}.${ext}',
     target: ['dmg'],
+    category: 'public.app-category.utilities',
   },
   win: {
     target: [
@@ -21,6 +22,8 @@
         arch: ['x64'],
       },
     ],
+    defaultArch: 'x64',
+
     artifactName: '${productName}_${version}.${ext}',
   },
   nsis: {
@@ -30,6 +33,10 @@
     deleteAppDataOnUninstall: false,
   },
   linux: {
+    desktop: {
+      Name: 'Peepo Sings',
+    },
+    category: 'Utility',
     target: ['AppImage'],
     artifactName: '${productName}_${version}.${ext}',
   },
