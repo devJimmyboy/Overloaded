@@ -75,12 +75,12 @@ class Overlay {
     }
     this.overlayWindow = null
     this.overlayWindow = new BrowserWindow({
-      ...this._options,
       title: this.name,
       transparent: this.transparent,
       resizable: this.transparent ? false : this.resizable,
       frame: this.frame,
       show: false,
+      alwaysOnTop: this.alwaysOnTop,
       skipTaskbar: true,
       webPreferences: {
         ...this._options.webPreferences,
@@ -96,16 +96,16 @@ class Overlay {
     this.stateKeeper.manage(this.overlayWindow)
     this.overlayWindow.loadURL(this.url)
     this.overlayWindow.on('ready-to-show', () => {
-      if (this.show) this.overlayWindow.showInactive()
       if (this.transparent) {
         this.toggleMouseIgnore()
       }
       if (this.alwaysOnTop) {
-        app.dock?.hide()
-        this.overlayWindow.setAlwaysOnTop(true, 'floating')
-        this.overlayWindow.setVisibleOnAllWorkspaces(true)
-        this.overlayWindow.setFullScreenable(false)
+        // app.dock?.hide()
+        this.overlayWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true })
+        this.overlayWindow.setAlwaysOnTop(true, 'screen-saver', 1)
+        // this.overlayWindow.setFullScreenable(false)
       }
+      if (this.show) this.overlayWindow.showInactive()
     })
   }
 
