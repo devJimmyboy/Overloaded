@@ -5,7 +5,7 @@
   appId: 'dev.jimmyboy.Overloaded',
   productName: 'Overloaded',
   asar: true,
-  icon: 'public/icon@2x.png',
+  icon: 'public/icon.png',
   directories: {
     output: 'release/${version}',
   },
@@ -14,7 +14,6 @@
     artifactName: '${productName}_${version}.${ext}',
     target: ['dmg'],
     icon: 'public/icon@2x.png',
-
     category: 'public.app-category.utilities',
   },
   win: {
@@ -25,7 +24,7 @@
       },
     ],
     defaultArch: 'x64',
-
+    icon: 'public/favicon.ico',
     artifactName: '${productName}_${version}.${ext}',
   },
   nsis: {
