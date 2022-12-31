@@ -1,5 +1,6 @@
 import { BrowserWindow } from 'electron'
 import windowStateKeeper, { State } from 'electron-window-state'
+import { join } from 'path'
 
 export interface OverlayOptions {
   name: string
@@ -27,6 +28,7 @@ class Overlay {
   private resizable: boolean = false
   private frame: boolean = false
   private show: boolean = true
+  private ignoringMouse: boolean = false
   constructor(options: OverlayOptions) {
     this._options = options
     this.stateKeeper = windowStateKeeper({
@@ -50,7 +52,7 @@ class Overlay {
   }
   toggleShow() {
     if (this.show) this.overlayWindow.hide()
-    else this.overlayWindow.show()
+    else this.overlayWindow.showInactive()
     this.show = this.overlayWindow.isVisible()
   }
 
@@ -60,12 +62,13 @@ class Overlay {
   }
 
   toggleEditing() {
-    this.resizable = !this.resizable
-    this.frame = !this.frame
-    this.reloadWindow()
+    this.toggleMouseIgnore()
+    this.overlayWindow.webContents.send('move')
   }
 
   reloadWindow() {
+    const preload = join(__dirname, '../preload/overlay.js')
+
     if (this.overlayWindow) {
       this.stateKeeper.saveState(this.overlayWindow)
       this.overlayWindow.close()
@@ -75,12 +78,13 @@ class Overlay {
       ...this._options,
       title: this.name,
       transparent: this.transparent,
-      resizable: this.resizable,
+      resizable: this.transparent ? false : this.resizable,
       frame: this.frame,
       show: false,
       skipTaskbar: true,
       webPreferences: {
         ...this._options.webPreferences,
+        preload,
         nodeIntegration: false,
         contextIsolation: false,
       },
@@ -92,10 +96,17 @@ class Overlay {
     this.stateKeeper.manage(this.overlayWindow)
     this.overlayWindow.loadURL(this.url)
     this.overlayWindow.on('ready-to-show', () => {
-      if (this.show) this.overlayWindow.show()
-      if (this.transparent) this.overlayWindow.setIgnoreMouseEvents(true, { forward: true })
+      if (this.show) this.overlayWindow.showInactive()
+      if (this.transparent) {
+        this.toggleMouseIgnore()
+      }
       if (this.alwaysOnTop) this.overlayWindow.setAlwaysOnTop(true, 'screen-saver')
     })
+  }
+
+  toggleMouseIgnore() {
+    this.overlayWindow.setIgnoreMouseEvents(!this.ignoringMouse, this.ignoringMouse ? {} : { forward: true })
+    this.ignoringMouse = !this.ignoringMouse
   }
   update(options: OverlayOptions) {
     this._options = options

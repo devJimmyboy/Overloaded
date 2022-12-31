@@ -1,4 +1,4 @@
-import { BrowserWindow, BrowserWindowConstructorOptions, Tray, app, shell } from 'electron'
+import { BrowserWindow, BrowserWindowConstructorOptions, Menu, Tray, app, shell } from 'electron'
 import Positioner from 'electron-positioner'
 import { getWindowPosition } from 'menubar'
 import EventEmitter from 'node:events'
@@ -6,7 +6,6 @@ import path from 'node:path'
 import TypedEmitter from 'typed-emitter'
 import fs from 'node:fs'
 import Overlay, { OverlayOptions } from './Overlay'
-import storage from 'electron-json-storage'
 import store from './store'
 
 type MessageEvents = {
@@ -152,7 +151,9 @@ class MainWindow extends (EventEmitter as new () => TypedEmitter<MessageEvents>)
     )
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     this.tray.on('double-click', this.clicked.bind(this))
-    this.tray.setToolTip('Overloaded - Overlays')
+    this.tray.setTitle('Overloaded')
+    const contextMenu = Menu.buildFromTemplate([{ label: 'Quit Overloaded', type: 'normal', click: () => this.app.quit() }])
+    this.tray.setContextMenu(contextMenu)
 
     this.windowPosition = getWindowPosition(this.tray)
 
@@ -167,6 +168,7 @@ class MainWindow extends (EventEmitter as new () => TypedEmitter<MessageEvents>)
         this.overlays.push(overlay)
       }
     }
+    this.updateTray()
 
     this.emit('ready')
   }
@@ -260,7 +262,7 @@ class MainWindow extends (EventEmitter as new () => TypedEmitter<MessageEvents>)
     const defaults: BrowserWindowConstructorOptions = {
       show: false, // Don't show it at first
       frame: false, // Remove window frame
-      alwaysOnTop: true, // Keep it on top of other windows
+      // alwaysOnTop: true, // Keep it on top of other windows
       skipTaskbar: true, // Don't show it in the taskbar
       fullscreenable: false, // Don't allow fullscreen
     }
@@ -314,7 +316,11 @@ class MainWindow extends (EventEmitter as new () => TypedEmitter<MessageEvents>)
     })
     this.emit('after-create-window')
   }
+  private updateTray(): void {
+    this.tray.setToolTip(`Overloaded - ${this.overlays.length} Overlays`)
+  }
   private windowClear(): void {
+    this.window.close()
     this._window = undefined
     this.emit('after-close')
   }
@@ -329,6 +335,7 @@ class MainWindow extends (EventEmitter as new () => TypedEmitter<MessageEvents>)
     const overlay = new Overlay(options)
     this.overlays.push(overlay)
     this.saveOverlays()
+    this.updateTray()
   }
 
   async editOverlay(name: string, options: OverlayOptions) {
@@ -341,6 +348,7 @@ class MainWindow extends (EventEmitter as new () => TypedEmitter<MessageEvents>)
     const overlay = this.overlays.find((overlay) => overlay.name.toLowerCase() === name.toLowerCase())
     overlay.update(options)
     this.saveOverlays()
+    this.updateTray()
     return overlay.toJson()
   }
   saveOverlays() {

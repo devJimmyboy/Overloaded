@@ -1,4 +1,4 @@
-import { Button, Card, Checkbox, Dialog, Divider, InputGroup, Label, NumericInput } from '@blueprintjs/core'
+import { Button, ButtonGroup, Card, Checkbox, Dialog, Divider, InputGroup, Label, NumericInput, Text } from '@blueprintjs/core'
 import { motion } from 'framer-motion'
 import { useCallback, useEffect, useState } from 'react'
 import { IOverlay } from '../types'
@@ -21,8 +21,27 @@ export default function Home() {
       {windows.length > 0 ? (
         windows.map((win: IOverlay) => {
           return (
-            <Card key={win.name} interactive onClick={() => navigate(`/overlay/${win.name.toLowerCase()}`)}>
-              {win.name}
+            <Card key={win.name} interactive onClick={() => navigate(`/overlay/${win.name.toLowerCase()}`)} style={{ display: 'flex', width: '100%', height: '5rem', alignItems: 'center' }}>
+              <Text style={{ fontWeight: 600, fontSize: '20px' }}>{win.name}</Text>
+              <div style={{ flexGrow: 1 }} />
+              <ButtonGroup>
+                <Button
+                  icon={win.show ? 'eye-on' : 'eye-off'}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    ipc.invoke('toggle-overlay', win.name).then(() => {
+                      getOverlays()
+                    })
+                  }}
+                />
+                <Button
+                  icon="edit"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    ipc.invoke('move-overlay', win.name)
+                  }}
+                />
+              </ButtonGroup>
             </Card>
           )
         })
@@ -31,13 +50,17 @@ export default function Home() {
       )}
       <div style={{ flexGrow: 1 }} />
       <Card style={{ width: '100%', height: '4rem' }}>
-        <ButtonWithDialog />
+        <ButtonWithDialog
+          onClose={() => {
+            getOverlays()
+          }}
+        />
       </Card>
     </motion.div>
   )
 }
 
-function ButtonWithDialog() {
+function ButtonWithDialog({ onClose }: { onClose?: () => void }) {
   const [isOpen, setIsOpen] = useState<boolean>(false)
   const form = useFormik<IOverlay>({
     initialValues: {
@@ -55,6 +78,7 @@ function ButtonWithDialog() {
     onSubmit: (values) => {
       ipc.invoke('new-overlay', values).then(() => {
         setIsOpen(false)
+        onClose?.()
       })
     },
   })

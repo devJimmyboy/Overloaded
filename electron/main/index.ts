@@ -80,7 +80,20 @@ ipcMain.handle('new-overlay', (_, arg: OverlayOptions) => {
 ipcMain.handle('update-overlay', (_, arg: OverlayOptions) => {
   return mainWindow?.editOverlay(arg.name, arg)
 })
+ipcMain.handle('toggle-overlay', (_, arg: string) => {
+  const ovrly = mainWindow?.overlays.find((o) => o.name.toLowerCase() === arg.toLowerCase())
+  if (ovrly) {
+    ovrly.toggleShow()
+  }
+})
 
 ipcMain.handle('get-overlays', (event) => {
   return store.get('overlays')
+})
+
+ipcMain.handle('move-overlay', (_, arg: string) => {
+  const ovrly = mainWindow?.overlays.find((o) => o.name.toLowerCase() === arg.toLowerCase())
+  if (ovrly) {
+    ovrly.toggleEditing()
+  }
 })

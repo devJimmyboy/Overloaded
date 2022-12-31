@@ -1,6 +1,6 @@
 {
   "name": "overloaded",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "dist-electron/main/index.js",
   "description": "Overlay Manager for Streams & Games",
   "author": {
