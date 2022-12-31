@@ -33,11 +33,8 @@
     deleteAppDataOnUninstall: false,
   },
   linux: {
-    desktop: {
-      Name: 'Peepo Sings',
-    },
     category: 'Utility',
-    target: ['AppImage'],
+    target: 'AppImage',
     artifactName: '${productName}_${version}.${ext}',
   },
 }
