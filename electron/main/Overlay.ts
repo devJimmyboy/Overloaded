@@ -1,4 +1,4 @@
-import { BrowserWindow } from 'electron'
+import { BrowserWindow, app } from 'electron'
 import windowStateKeeper, { State } from 'electron-window-state'
 import { join } from 'path'
 
@@ -100,7 +100,12 @@ class Overlay {
       if (this.transparent) {
         this.toggleMouseIgnore()
       }
-      if (this.alwaysOnTop) this.overlayWindow.setAlwaysOnTop(true, 'screen-saver')
+      if (this.alwaysOnTop) {
+        app.dock?.hide()
+        this.overlayWindow.setAlwaysOnTop(true, 'floating')
+        this.overlayWindow.setVisibleOnAllWorkspaces(true)
+        this.overlayWindow.setFullScreenable(false)
+      }
     })
   }
 
