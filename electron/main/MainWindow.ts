@@ -262,7 +262,7 @@ class MainWindow extends (EventEmitter as new () => TypedEmitter<MessageEvents>)
     const defaults: BrowserWindowConstructorOptions = {
       show: false, // Don't show it at first
       frame: false, // Remove window frame
-      // alwaysOnTop: true, // Keep it on top of other windows
+      alwaysOnTop: !!process.env.VITE_DEV_SERVER_URL, // Keep it on top of other windows
       skipTaskbar: true, // Don't show it in the taskbar
       fullscreenable: false, // Don't allow fullscreen
     }

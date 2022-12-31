@@ -4,6 +4,8 @@ import { join } from 'node:path'
 import MainWindow from './MainWindow'
 import store from './store'
 import { OverlayOptions } from './Overlay'
+import AutoUpdater from './AutoUpdater'
+import { UpdateInfo } from 'electron-updater'
 
 process.env.DIST_ELECTRON = join(__dirname, '../')
 process.env.DIST = join(process.env.DIST_ELECTRON, '../dist')
@@ -30,8 +32,11 @@ if (url) {
   import('source-map-support/register.js').then(() => console.log('Source map support enabled'))
 }
 let mainWindow: MainWindow | null = null
-
+let updater: AutoUpdater | null = null
 app.whenReady().then(() => {
+  if (!process.env.VITE_DEV_SERVER_URL) {
+    updater = new AutoUpdater()
+  }
   mainWindow = new MainWindow()
 })
 
@@ -95,5 +100,27 @@ ipcMain.handle('move-overlay', (_, arg: string) => {
   const ovrly = mainWindow?.overlays.find((o) => o.name.toLowerCase() === arg.toLowerCase())
   if (ovrly) {
     ovrly.toggleEditing()
+  }
+})
+
+ipcMain.handle('get-version', (_) => {
+  return app.getVersion()
+})
+
+ipcMain.handle('manual-update', (_) => {
+  if (updater) {
+    return updater.manualCheckForUpdates(BrowserWindow.fromWebContents(_.sender))
+  } else {
+    return Promise.resolve({
+      version: app.getVersion(),
+      releaseDate: new Date().toISOString(),
+      releaseName: 'Development',
+      files: [],
+    } as UpdateInfo)
+  }
+})
+ipcMain.handle('update-now', (_) => {
+  if (updater) {
+    return updater.downloadUpdate()
   }
 })

@@ -24,7 +24,7 @@ export default function Home() {
             <Card key={win.name} interactive onClick={() => navigate(`/overlay/${win.name.toLowerCase()}`)} style={{ display: 'flex', width: '100%', height: '5rem', alignItems: 'center' }}>
               <Text style={{ fontWeight: 600, fontSize: '20px' }}>{win.name}</Text>
               <div style={{ flexGrow: 1 }} />
-              <ButtonGroup>
+              <ButtonGroup large>
                 <Button
                   icon={win.show ? 'eye-on' : 'eye-off'}
                   onClick={(e) => {

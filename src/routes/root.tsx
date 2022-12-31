@@ -22,16 +22,17 @@ function Root() {
     <div style={{ overflow: 'hidden', height: '100%' }}>
       <Navbar fixedToTop>
         <Navbar.Group style={{ display: location.pathname === '/' ? 'none' : 'flex', marginRight: 12, transition: 'display 200ms' }}>
-          <Button minimal icon="arrow-left" onClick={() => navigate(-1)} />
+          <Button minimal icon="arrow-left" onClick={() => navigate('/')} />
         </Navbar.Group>
         <Navbar.Group>
           <Navbar.Heading style={{ userSelect: 'none' }}>Overloaded</Navbar.Heading>
           <Navbar.Divider />
         </Navbar.Group>
         <Navbar.Group align="right">
-          <Popover2 content={<MoreMenu />} placement="bottom">
+          <Button icon="cog" onClick={() => navigate('/settings')} />
+          {/* <Popover2 content={<MoreMenu />} placement="bottom">
             <Button icon="more" style={{}}></Button>
-          </Popover2>
+          </Popover2> */}
         </Navbar.Group>
       </Navbar>
       <AnimatePresence mode="wait">
