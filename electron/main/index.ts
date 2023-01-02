@@ -5,6 +5,7 @@ import MainWindow from './MainWindow'
 import store from './store'
 import { OverlayOptions } from './Overlay'
 import AutoUpdater from './AutoUpdater'
+import AutoLaunch from 'auto-launch'
 import { UpdateInfo } from 'electron-updater'
 
 process.env.DIST_ELECTRON = join(__dirname, '../')
@@ -54,6 +55,19 @@ app.whenReady().then(() => {
 //     allWindows[0].focus()
 //   }
 // })
+
+let autoLauncher: AutoLaunch | null = null
+if (app.isPackaged && !process.env.VITE_DEV_SERVER_URL) {
+  autoLauncher = new AutoLaunch({
+    name: app.name,
+    path: app.getPath('exe'),
+  })
+  autoLauncher.isEnabled().then((enabled) => {
+    if (!enabled) {
+      autoLauncher.enable()
+    }
+  })
+}
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
